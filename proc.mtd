@@ -1,0 +1,7 @@
+dev:    size   erasesize  name
+mtd0: 00080000 00040000 "U-Boot"
+mtd1: 00200000 00040000 "Kernel"
+mtd2: 00900000 00040000 "RootFS1"
+mtd3: 00300000 00040000 "RootFS2"
+mtd4: 00040000 00040000 "U-Boot Config"
+mtd5: 00140000 00040000 "NAS Config"

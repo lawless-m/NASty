@@ -1,0 +1,18 @@
+# /etc/systemd/system/iscsi-thinclient.service
+# iSCSI target for thin client boot image
+
+[Unit]
+Description=VoE iSCSI target for thin client
+After=network.target
+
+[Service]
+Environment=RUST_LOG=debug
+ExecStart=/usr/local/bin/iscsi-server \
+    --file /srv/iscsi/thinclient.img \
+    --bind 192.168.99.1:3260 \
+    --target iqn.2025-12.local.voe:storage.thinclient \
+    --size 102400
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
