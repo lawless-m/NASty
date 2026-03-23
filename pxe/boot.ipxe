@@ -9,6 +9,6 @@ set root-uuid afe6ca61-cfc6-4369-93f3-f0e592247b94
 
 echo Booting Debian from iSCSI ${iscsi-server} ...
 
-kernel http://${iscsi-server}:8080/vmlinuz root=UUID=${root-uuid} ip=dhcp ISCSI_INITIATOR=iqn.2025-12.local.voe:initiator.thinclient ISCSI_TARGET_NAME=${iscsi-target} ISCSI_TARGET_IP=${iscsi-server} ISCSI_TARGET_PORT=3260
-initrd http://${iscsi-server}:8080/initrd.img
+kernel tftp://${iscsi-server}/vmlinuz root=UUID=${root-uuid} ro nosplash loglevel=7 ip=dhcp ISCSI_INITIATOR=iqn.2025-12.local.voe:initiator.thinclient ISCSI_TARGET_NAME=${iscsi-target} ISCSI_TARGET_IP=${iscsi-server} ISCSI_TARGET_PORT=3260
+initrd tftp://${iscsi-server}/initrd.img
 boot
