@@ -74,10 +74,10 @@ CARGO_TARGET_ARMV5TE_UNKNOWN_LINUX_MUSLEABI_LINKER=arm-linux-gnueabi-gcc \
 - [x] MTD backup
 - [x] Debian Buster installed on Floor12
 - [x] PXE boot server (dnsmasq + iPXE + iSCSI) working
-- [x] Thin client boots Debian Trixie over iSCSI (using tgt)
+- [x] Thin client boots Debian Trixie over iSCSI (via VoE iscsi-server)
 - [x] IP forwarding + NAT between PXE and home networks
-- [ ] VoE iscsi-server Data-Out bug with Linux initiator (works with tgt)
-- [ ] Make tgt config persistent across reboots
+- [x] VoE iscsi-server Data-Out bug fixed (iscsi-crate 1.0.0, deployed 2026-06-21; verified 32 MB multi-PDU write with open-iscsi)
+- [x] Retired tgt (disabled 2026-06-21; VoE owns 192.168.99.1:3260)
 - [ ] Thin client WiFi configuration
 - [ ] HTTP server as systemd service (currently manual python3)
 

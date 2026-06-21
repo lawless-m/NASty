@@ -82,20 +82,33 @@ ssh floor12 'sudo zstd -d /tmp/thinclient.img.zst -o /srv/iscsi/thinclient.img'
 
 ## iSCSI Target
 
-Currently using `tgt` (Linux SCSI target framework) because VoE's
-iscsi-server has a Data-Out PDU handling bug with the Linux open-iscsi
-initiator. Once fixed, switch to VoE:
+Served by VoE's `iscsi-server`, run as `iscsi-thinclient.service`. It binds
+`192.168.99.1:3260` and exports `/srv/iscsi/thinclient.img` as target
+`iqn.2025-12.local.voe:storage.thinclient`.
 
 ```bash
-# tgt (working)
-sudo tgtadm --lld iscsi --op new --mode target --tid 1 \
-  -T iqn.2025-12.local.voe:storage.thinclient
-sudo tgtadm --lld iscsi --op new --mode logicalunit --tid 1 \
-  --lun 1 --backing-store /srv/iscsi/thinclient.img
-sudo tgtadm --lld iscsi --op bind --mode target --tid 1 -I ALL
+sudo systemctl status iscsi-thinclient    # check
+sudo systemctl restart iscsi-thinclient   # bounce after a binary swap
+sudo journalctl -u iscsi-thinclient -f    # logs (RUST_LOG=debug in the unit)
+```
 
-# VoE (once Data-Out bug is fixed)
-sudo systemctl start iscsi-thinclient
+The old `tgt` stopgap has been retired (`systemctl disable --now tgt`,
+2026-06-21). VoE was blocked by a Data-Out PDU bug with the Linux open-iscsi
+initiator; that is fixed as of `iscsi-crate` 1.0.0 (verified with a 32 MB
+multi-PDU write/read-back through open-iscsi).
+
+### Rebuilding and redeploying iscsi-server
+
+Cross-compile a static ARMv5 musl binary on the workstation, ship it, swap it:
+
+```bash
+# in ../VoE
+CARGO_TARGET_ARMV5TE_UNKNOWN_LINUX_MUSLEABI_LINKER=arm-linux-gnueabi-gcc \
+  cargo build --release --target armv5te-unknown-linux-musleabi --bin iscsi-server
+
+scp target/armv5te-unknown-linux-musleabi/release/iscsi-server floor12:/tmp/
+ssh floor12 'sudo install -m755 /tmp/iscsi-server /usr/local/bin/iscsi-server \
+  && sudo systemctl restart iscsi-thinclient'
 ```
 
 ## Deployment
